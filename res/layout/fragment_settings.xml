@@ -3,7 +3,7 @@
   xmlns:android="http://schemas.android.com/apk/res/android">
 
   <SwitchPreference
-    android:key="settings_per_app_proxy"
-    android:title="@string/settings_per_app_proxy"/>
+    android:key="use_per_app_proxy"
+    android:title="@string/per_app_proxy"/>
 
 </PreferenceScreen>
