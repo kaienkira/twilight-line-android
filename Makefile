@@ -1,7 +1,7 @@
 #==============================================================================
 #-*- CONFIGS -*- 
 #==============================================================================
-CFG_ANDROID_SDK_BUILD_TOOL = 28.0.1
+CFG_ANDROID_SDK_BUILD_TOOL = 28.0.3
 CFG_ANDROID_SDK_PLATFORM = android-28
 CFG_APK_NAME = twilight-line-android
 CFG_PACKAGE_NAME = com.brickredstudio.twilightline
