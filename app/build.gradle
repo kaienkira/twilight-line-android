@@ -22,11 +22,14 @@ android {
             v2SigningEnabled true
             storeFile project.file("key/android.keystore")
             storePassword keystoreProperties["storePassword"]
+            keyAlias keystoreProperties["keyAlias"]
             keyPassword keystoreProperties["keyPassword"]
         }
     }
 
     buildTypes {
+        debug {
+        }
         release {
             minifyEnabled true
             signingConfig signingConfigs.release
