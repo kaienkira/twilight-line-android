@@ -1,6 +1,6 @@
 apply plugin: "com.android.application"
 
-def keystorePropertiesFile = rootProject.file("key/keystore.properties")
+def keystorePropertiesFile = project.file("key/keystore.properties")
 def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
@@ -10,25 +10,30 @@ android {
 
     defaultConfig {
         applicationId "com.brickredstudio.twilightline"
-        minSdkVersion 23
+        minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
-        versionCodeName "0.1.0"
+        versionName "0.1.0"
+    }
+
+    signingConfigs {
+        release {
+            v1SigningEnabled true
+            v2SigningEnabled true
+            storeFile project.file("key/android.keystore")
+            storePassword keystoreProperties["storePassword"]
+            keyPassword keystoreProperties["keyPassword"]
+        }
     }
 
     buildTypes {
         release {
             minifyEnabled true
-            signingConfig {
-                v1SigningEnabled true
-                v2SigningEnabled true
-                storeFile rootProject.file("key/android.keystore")
-                storePassword keystoreProperties["storePassword"]
-                keyPassword keystoreProperties["keyPassword"]
-            }
+            signingConfig signingConfigs.release
         }
     }
 
     dependencies {
+        compile "com.android.support:appcompat-v7:28.0.0"
     }
 }
