@@ -11,3 +11,6 @@ release:
 
 clean:
 	@gradle clean
+
+install:
+	@adb install -r app/build/outputs/apk/release/app-release.apk
