@@ -4,7 +4,7 @@
 
   <item
     android:id="@+id/switch_proxy"
-    android:title="@string/switch_proxy"
+    android:title=""
     app:showAsAction="always"
     app:actionLayout="@layout/switch_proxy_action"/>
 
