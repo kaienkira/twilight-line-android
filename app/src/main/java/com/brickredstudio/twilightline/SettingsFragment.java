@@ -1,11 +1,13 @@
 package com.brickredstudio.twilightline;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.Toast;
 import androidx.preference.PreferenceFragmentCompat;
 
 public class SettingsFragment extends PreferenceFragmentCompat
@@ -35,10 +37,33 @@ public class SettingsFragment extends PreferenceFragmentCompat
             this.switchProxyButton.setOnCheckedChangeListener(
                 new CompoundButton.OnCheckedChangeListener() {
                     @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        presenter.switchVpn(isChecked);
+                    public void onCheckedChanged(
+                        CompoundButton buttonView, boolean isChecked) {
+                        presenter.onSwitchProxyButtonCheckedChanged(isChecked);
                     }
                 });
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.presenter.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void reportError(String errorMessage)
+    {
+        Toast.makeText(this.getActivity(), errorMessage, Toast.LENGTH_LONG).show();
+    }
+
+    public void setSwitchProxyButtonEnable(boolean isEnable)
+    {
+        this.switchProxyButton.setEnabled(isEnable);
+    }
+
+    public void setSwitchProxyButtonChecked(boolean isChecked)
+    {
+        this.switchProxyButton.setChecked(isChecked);
     }
 }

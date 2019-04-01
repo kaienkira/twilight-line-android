@@ -2,4 +2,6 @@
 <resources>
   <string name="app_name">TwilightLine</string>
   <string name="per_app_proxy">Per-app Proxy</string>
+  <string name="error_prepare_vpn_service_failed">Prepare vpn service failed</string>
+  <string name="error_boot_vpn_service_failed">Boot vpn service failed</string>
 </resources>
