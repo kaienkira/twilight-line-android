@@ -52,7 +52,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         this.presenter.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void reportError(String errorMessage)
+    public void showError(String errorMessage)
     {
         Toast.makeText(this.getActivity(), errorMessage, Toast.LENGTH_LONG).show();
     }

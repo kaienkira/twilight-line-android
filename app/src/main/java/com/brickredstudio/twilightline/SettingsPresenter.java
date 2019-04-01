@@ -53,7 +53,7 @@ public class SettingsPresenter
 
     private void startProxyFailed(String errorMessage)
     {
-        this.view.reportError(errorMessage);
+        this.view.showError(errorMessage);
         this.view.setSwitchProxyButtonChecked(false);
         this.view.setSwitchProxyButtonEnable(true);
     }
