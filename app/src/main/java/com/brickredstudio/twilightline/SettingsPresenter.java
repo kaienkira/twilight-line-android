@@ -3,6 +3,7 @@ package com.brickredstudio.twilightline;
 import android.content.Intent;
 import android.net.VpnService;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 public class SettingsPresenter
 {
@@ -47,8 +48,10 @@ public class SettingsPresenter
 
     private void startProxyStep2()
     {
-        startProxyFailed(this.view.getString(
-            R.string.error_boot_vpn_service_failed));
+        Intent indent = new Intent(
+            this.view.getActivity(), TwilightLineVpnService.class);
+
+        ContextCompat.startForegroundService(this.view.getActivity(), indent);
     }
 
     private void startProxyFailed(String errorMessage)
