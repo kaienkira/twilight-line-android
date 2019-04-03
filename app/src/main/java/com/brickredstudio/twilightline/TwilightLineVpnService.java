@@ -10,9 +10,9 @@ public class TwilightLineVpnService extends VpnService
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        startForeground(1,
+        startForeground(MainActivity.NOTIFICATION_ID,
             new NotificationCompat.Builder(
-                this, NotificationChannel.DEFAULT_CHANNEL_ID)
+                this, MainActivity.NOTIFICATION_CHANNEL_ID)
             .setContentTitle(getString(R.string.vpn_service_notify_title))
             .setContentText(getString(R.string.vpn_service_notify_message))
             .setSmallIcon(R.drawable.app_icon)
