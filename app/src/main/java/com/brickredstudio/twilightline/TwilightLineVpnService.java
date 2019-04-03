@@ -14,7 +14,6 @@ public class TwilightLineVpnService extends VpnService
             new NotificationCompat.Builder(
                 this, MainActivity.NOTIFICATION_CHANNEL_ID)
             .setContentTitle(getString(R.string.vpn_service_notify_title))
-            .setContentText(getString(R.string.vpn_service_notify_message))
             .setSmallIcon(R.drawable.app_icon)
             .build());
 
