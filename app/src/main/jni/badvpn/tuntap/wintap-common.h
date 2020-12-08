@@ -1,5 +1,8 @@
-/*
- * Copyright (C) Ambroz Bizjak <ambrop7@gmail.com>
+/**
+ * @file wintap-common.h
+ * @author Ambroz Bizjak <ambrop7@gmail.com>
+ * 
+ * @section LICENSE
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -22,31 +25,15 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * @section DESCRIPTION
+ * 
+ * API definitions for TAP-Win32.
  */
 
-// name of the program
-#define PROGRAM_NAME "tun2socks"
+#define TAP_IOCTL_CONFIG_TUN            CTL_CODE(FILE_DEVICE_UNKNOWN, 10, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define TAP_IOCTL_GET_MTU               CTL_CODE(FILE_DEVICE_UNKNOWN, 3, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define TAP_IOCTL_SET_MEDIA_STATUS      CTL_CODE(FILE_DEVICE_UNKNOWN, 6, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
-// size of temporary buffer for passing data from the SOCKS server to TCP for sending
-#define CLIENT_SOCKS_RECV_BUF_SIZE 8192
-
-// maximum number of udpgw connections
-#define DEFAULT_UDPGW_MAX_CONNECTIONS 256
-
-// udpgw per-connection send buffer size, in number of packets
-#define DEFAULT_UDPGW_CONNECTION_BUFFER_SIZE 8
-
-// udpgw reconnect time after connection fails
-#define UDPGW_RECONNECT_TIME 5000
-
-// udpgw keepalive sending interval
-#define UDPGW_KEEPALIVE_TIME 10000
-
-// option to override the destination addresses to give the SOCKS server
-//#define OVERRIDE_DEST_ADDR "10.111.0.2:2000"
-
-// Max number of buffered outgoing UDP packets for SOCKS5-UDP. It should be large
-// enough to prevent packet loss while the SOCKS UDP association is being set up. A slow
-// or far-away SOCKS server could require 300 ms to connect, and a chatty client (e.g.
-// STUN) could send a packet every 20 ms, so a default limit of 16 seems reasonable.
-#define SOCKS_UDP_SEND_BUFFER_PACKETS 16
+#define ADAPTER_KEY "SYSTEM\\CurrentControlSet\\Control\\Class\\{4D36E972-E325-11CE-BFC1-08002BE10318}"
+#define NETWORK_CONNECTIONS_KEY "SYSTEM\\CurrentControlSet\\Control\\Network\\{4D36E972-E325-11CE-BFC1-08002BE10318}"

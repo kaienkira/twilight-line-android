@@ -1,7 +1,8 @@
-/*
- * Copyright (C) Ambroz Bizjak <ambrop7@gmail.com>
- * Contributions:
- * Transparent DNS: Copyright (C) Kerem Hadimli <kerem.hadimli@gmail.com>
+/**
+ * @file BReactor_emscripten.h
+ * @author Ambroz Bizjak <ambrop7@gmail.com>
+ * 
+ * @section LICENSE
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,39 +27,61 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef BADVPN_TUN2SOCKS_SOCKSUDPGWCLIENT_H
-#define BADVPN_TUN2SOCKS_SOCKSUDPGWCLIENT_H
+#ifndef BADVPN_SYSTEM_BREACTOR_H
+#define BADVPN_SYSTEM_BREACTOR_H
 
-#include <misc/debug.h>
+#include <stdint.h>
+
 #include <base/DebugObject.h>
-#include <system/BReactor.h>
-#include <udpgw_client/UdpGwClient.h>
-#include <socksclient/BSocksClient.h>
+#include <base/BPending.h>
+#include <system/BTime.h>
 
-typedef void (*SocksUdpGwClient_handler_received) (void *user, BAddr local_addr, BAddr remote_addr, const uint8_t *data, int data_len);
+#define BTIMER_SET_RELATIVE 2
 
-typedef struct {
-    int udp_mtu;
-    BAddr socks_server_addr;
-    const struct BSocksClient_auth_info *auth_info;
-    size_t num_auth_info;
-    BAddr remote_udpgw_addr;
+typedef struct BReactor_s BReactor;
+
+typedef void (*BTimer_handler) (void *user);
+
+typedef struct BTimer_t {
+    btime_t msTime;
+    BTimer_handler handler;
+    void *handler_pointer;
+    uint8_t active;
+    int timerid;
     BReactor *reactor;
-    void *user;
-    SocksUdpGwClient_handler_received handler_received;
-    UdpGwClient udpgw_client;
-    BTimer reconnect_timer;
-    int have_socks;
-    BSocksClient socks_client;
-    int socks_up;
-    DebugObject d_obj;
-} SocksUdpGwClient;
+} BTimer;
 
-int SocksUdpGwClient_Init (SocksUdpGwClient *o, int udp_mtu, int max_connections, int send_buffer_size, btime_t keepalive_time,
-                           BAddr socks_server_addr, const struct BSocksClient_auth_info *auth_info, size_t num_auth_info,
-                           BAddr remote_udpgw_addr, btime_t reconnect_time, BReactor *reactor, void *user,
-                           SocksUdpGwClient_handler_received handler_received) WARN_UNUSED;
-void SocksUdpGwClient_Free (SocksUdpGwClient *o);
-void SocksUdpGwClient_SubmitPacket (SocksUdpGwClient *o, BAddr local_addr, BAddr remote_addr, int is_dns, const uint8_t *data, int data_len);
+void BTimer_Init (BTimer *bt, btime_t msTime, BTimer_handler handler, void *user);
+int BTimer_IsRunning (BTimer *bt);
+
+struct BSmallTimer_t;
+
+typedef void (*BSmallTimer_handler) (struct BSmallTimer_t *timer);
+
+typedef struct BSmallTimer_t {
+    BTimer timer;
+    BSmallTimer_handler handler;
+} BSmallTimer;
+
+void BSmallTimer_Init (BSmallTimer *bt, BSmallTimer_handler handler);
+int BSmallTimer_IsRunning (BSmallTimer *bt);
+
+struct BReactor_s {
+    BPendingGroup pending_jobs;
+    DebugObject d_obj;
+};
+
+void BReactor_EmscriptenInit (BReactor *bsys);
+void BReactor_EmscriptenFree (BReactor *bsys);
+void BReactor_EmscriptenSync (BReactor *bsys);
+
+BPendingGroup * BReactor_PendingGroup (BReactor *bsys);
+
+void BReactor_SetTimer (BReactor *bsys, BTimer *bt);
+void BReactor_SetTimerAfter (BReactor *bsys, BTimer *bt, btime_t after);
+void BReactor_RemoveTimer (BReactor *bsys, BTimer *bt);
+
+void BReactor_SetSmallTimer (BReactor *bsys, BSmallTimer *bt, int mode, btime_t time);
+void BReactor_RemoveSmallTimer (BReactor *bsys, BSmallTimer *bt);
 
 #endif

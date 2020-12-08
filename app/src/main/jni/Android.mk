@@ -23,11 +23,13 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := tun2socks
 LOCAL_CFLAGS := -std=gnu99
-LOCAL_CFLAGS := -Wno-parentheses -Wno-unused-value -Wno-address-of-packed-member -Wno-pointer-sign
-LOCAL_CFLAGS += -DBADVPN_THREADWORK_USE_PTHREAD -DBADVPN_LINUX -DBADVPN_BREACTOR_BADVPN -D_GNU_SOURCE
+LOCAL_CFLAGS += -Wno-parentheses -Wno-unused-value
+LOCAL_CFLAGS += -Wno-address-of-packed-member -Wno-pointer-sign
+LOCAL_CFLAGS += -DNDEBUG -DANDROID -DBADVPN_LINUX -D_GNU_SOURCE
+LOCAL_CFLAGS += -DBADVPN_THREADWORK_USE_PTHREAD -DBADVPN_THREAD_SAFE
+LOCAL_CFLAGS += -DBADVPN_BREACTOR_BADVPN
 LOCAL_CFLAGS += -DBADVPN_USE_SIGNALFD -DBADVPN_USE_EPOLL
-LOCAL_CFLAGS += -DBADVPN_LITTLE_ENDIAN -DBADVPN_THREAD_SAFE
-LOCAL_CFLAGS += -DNDEBUG -DANDROID
+LOCAL_CFLAGS += -DBADVPN_LITTLE_ENDIAN
 LOCAL_LDLIBS := -ldl -llog
 LOCAL_STATIC_LIBRARIES := libancillary
 
@@ -70,6 +72,8 @@ LOCAL_SRC_FILES := \
     badvpn/flow/StreamPassInterface.c \
     badvpn/flow/StreamRecvConnector.c \
     badvpn/flow/StreamRecvInterface.c \
+    badvpn/flowextra/KeepaliveIO.c \
+    badvpn/flowextra/PacketPassInactivityMonitor.c \
     badvpn/lwip/custom/sys.c \
     badvpn/lwip/src/core/altcp.c \
     badvpn/lwip/src/core/altcp_tcp.c \
@@ -107,6 +111,7 @@ LOCAL_SRC_FILES := \
     badvpn/lwip/src/core/ipv6/ip6_frag.c \
     badvpn/lwip/src/core/ipv6/mld6.c \
     badvpn/lwip/src/core/ipv6/nd6.c \
+    badvpn/socks_udp_client/SocksUdpClient.c \
     badvpn/socksclient/BSocksClient.c \
     badvpn/system/BConnection_common.c \
     badvpn/system/BConnection_unix.c \
@@ -123,5 +128,6 @@ LOCAL_SRC_FILES := \
     badvpn/tun2socks/tun2socks.c \
     badvpn/tun2socks/SocksUdpGwClient.c \
     badvpn/tuntap/BTap.c \
+    badvpn/udpgw_client/UdpGwClient.c \
 
 include $(BUILD_EXECUTABLE)

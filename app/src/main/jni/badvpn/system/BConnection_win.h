@@ -1,7 +1,8 @@
-/*
- * Copyright (C) Ambroz Bizjak <ambrop7@gmail.com>
- * Contributions:
- * Transparent DNS: Copyright (C) Kerem Hadimli <kerem.hadimli@gmail.com>
+/**
+ * @file BConnection_win.h
+ * @author Ambroz Bizjak <ambrop7@gmail.com>
+ * 
+ * @section LICENSE
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,39 +27,75 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef BADVPN_TUN2SOCKS_SOCKSUDPGWCLIENT_H
-#define BADVPN_TUN2SOCKS_SOCKSUDPGWCLIENT_H
+#include <windows.h>
+#include <winsock2.h>
+#ifdef BADVPN_USE_SHIPPED_MSWSOCK
+#    include <misc/mswsock.h>
+#else
+#    include <mswsock.h>
+#endif
 
-#include <misc/debug.h>
+#include <misc/debugerror.h>
 #include <base/DebugObject.h>
-#include <system/BReactor.h>
-#include <udpgw_client/UdpGwClient.h>
-#include <socksclient/BSocksClient.h>
 
-typedef void (*SocksUdpGwClient_handler_received) (void *user, BAddr local_addr, BAddr remote_addr, const uint8_t *data, int data_len);
+struct BListener_addrbuf_stub {
+    union {
+        struct sockaddr_in ipv4;
+        struct sockaddr_in6 ipv6;
+    } addr;
+    uint8_t extra[16];
+};
 
-typedef struct {
-    int udp_mtu;
-    BAddr socks_server_addr;
-    const struct BSocksClient_auth_info *auth_info;
-    size_t num_auth_info;
-    BAddr remote_udpgw_addr;
+struct BListener_s {
     BReactor *reactor;
     void *user;
-    SocksUdpGwClient_handler_received handler_received;
-    UdpGwClient udpgw_client;
-    BTimer reconnect_timer;
-    int have_socks;
-    BSocksClient socks_client;
-    int socks_up;
+    BListener_handler handler;
+    int sys_family;
+    SOCKET sock;
+    LPFN_ACCEPTEX fnAcceptEx;
+    LPFN_GETACCEPTEXSOCKADDRS fnGetAcceptExSockaddrs;
+    BReactorIOCPOverlapped olap;
+    SOCKET newsock;
+    uint8_t addrbuf[2 * sizeof(struct BListener_addrbuf_stub)];
+    BPending next_job;
+    int busy;
+    int ready;
     DebugObject d_obj;
-} SocksUdpGwClient;
+};
 
-int SocksUdpGwClient_Init (SocksUdpGwClient *o, int udp_mtu, int max_connections, int send_buffer_size, btime_t keepalive_time,
-                           BAddr socks_server_addr, const struct BSocksClient_auth_info *auth_info, size_t num_auth_info,
-                           BAddr remote_udpgw_addr, btime_t reconnect_time, BReactor *reactor, void *user,
-                           SocksUdpGwClient_handler_received handler_received) WARN_UNUSED;
-void SocksUdpGwClient_Free (SocksUdpGwClient *o);
-void SocksUdpGwClient_SubmitPacket (SocksUdpGwClient *o, BAddr local_addr, BAddr remote_addr, int is_dns, const uint8_t *data, int data_len);
+struct BConnector_s {
+    BReactor *reactor;
+    void *user;
+    BConnector_handler handler;
+    SOCKET sock;
+    LPFN_CONNECTEX fnConnectEx;
+    BReactorIOCPOverlapped olap;
+    int busy;
+    int ready;
+    DebugObject d_obj;
+};
 
-#endif
+struct BConnection_s {
+    BReactor *reactor;
+    void *user;
+    BConnection_handler handler;
+    SOCKET sock;
+    int aborted;
+    struct {
+        BReactorIOCPOverlapped olap;
+        int inited;
+        StreamPassInterface iface;
+        int busy;
+        int busy_data_len;
+    } send;
+    struct {
+        BReactorIOCPOverlapped olap;
+        int closed;
+        int inited;
+        StreamRecvInterface iface;
+        int busy;
+        int busy_data_len;
+    } recv;
+    DebugError d_err;
+    DebugObject d_obj;
+};

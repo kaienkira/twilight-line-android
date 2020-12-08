@@ -1,5 +1,8 @@
-/*
- * Copyright (C) Ambroz Bizjak <ambrop7@gmail.com>
+/**
+ * @file tapwin32-funcs.h
+ * @author Ambroz Bizjak <ambrop7@gmail.com>
+ * 
+ * @section LICENSE
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -24,29 +27,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// name of the program
-#define PROGRAM_NAME "tun2socks"
+#ifndef BADVPN_TUNTAP_TAPWIN32_FUNCS_H
+#define BADVPN_TUNTAP_TAPWIN32_FUNCS_H
 
-// size of temporary buffer for passing data from the SOCKS server to TCP for sending
-#define CLIENT_SOCKS_RECV_BUF_SIZE 8192
+#include <stdint.h>
+#include <windows.h>
 
-// maximum number of udpgw connections
-#define DEFAULT_UDPGW_MAX_CONNECTIONS 256
+#define TAPWIN32_MAX_REG_SIZE 256
 
-// udpgw per-connection send buffer size, in number of packets
-#define DEFAULT_UDPGW_CONNECTION_BUFFER_SIZE 8
+int tapwin32_parse_tap_spec (char *name, char **out_component_id, char **out_human_name);
+int tapwin32_parse_tun_spec (char *name, char **out_component_id, char **out_human_name, uint32_t out_addrs[3]);
+int tapwin32_find_device (char *device_component_id, char *device_name, char (*device_path)[TAPWIN32_MAX_REG_SIZE]);
 
-// udpgw reconnect time after connection fails
-#define UDPGW_RECONNECT_TIME 5000
-
-// udpgw keepalive sending interval
-#define UDPGW_KEEPALIVE_TIME 10000
-
-// option to override the destination addresses to give the SOCKS server
-//#define OVERRIDE_DEST_ADDR "10.111.0.2:2000"
-
-// Max number of buffered outgoing UDP packets for SOCKS5-UDP. It should be large
-// enough to prevent packet loss while the SOCKS UDP association is being set up. A slow
-// or far-away SOCKS server could require 300 ms to connect, and a chatty client (e.g.
-// STUN) could send a packet every 20 ms, so a default limit of 16 seems reasonable.
-#define SOCKS_UDP_SEND_BUFFER_PACKETS 16
+#endif

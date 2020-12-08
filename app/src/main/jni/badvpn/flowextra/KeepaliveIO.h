@@ -1,7 +1,8 @@
-/*
- * Copyright (C) Ambroz Bizjak <ambrop7@gmail.com>
- * Contributions:
- * Transparent DNS: Copyright (C) Kerem Hadimli <kerem.hadimli@gmail.com>
+/**
+ * @file KeepaliveIO.h
+ * @author Ambroz Bizjak <ambrop7@gmail.com>
+ * 
+ * @section LICENSE
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -24,41 +25,64 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * @section DESCRIPTION
+ * 
+ * A {@link PacketPassInterface} layer for sending keep-alive packets.
  */
 
-#ifndef BADVPN_TUN2SOCKS_SOCKSUDPGWCLIENT_H
-#define BADVPN_TUN2SOCKS_SOCKSUDPGWCLIENT_H
+#ifndef BADVPN_KEEPALIVEIO
+#define BADVPN_KEEPALIVEIO
 
 #include <misc/debug.h>
 #include <base/DebugObject.h>
 #include <system/BReactor.h>
-#include <udpgw_client/UdpGwClient.h>
-#include <socksclient/BSocksClient.h>
+#include <flow/PacketPassInterface.h>
+#include <flow/PacketRecvInterface.h>
+#include <flow/PacketPassPriorityQueue.h>
+#include <flow/SinglePacketBuffer.h>
+#include <flow/PacketRecvBlocker.h>
+#include <flowextra/PacketPassInactivityMonitor.h>
 
-typedef void (*SocksUdpGwClient_handler_received) (void *user, BAddr local_addr, BAddr remote_addr, const uint8_t *data, int data_len);
-
+/**
+ * A {@link PacketPassInterface} layer for sending keep-alive packets.
+ */
 typedef struct {
-    int udp_mtu;
-    BAddr socks_server_addr;
-    const struct BSocksClient_auth_info *auth_info;
-    size_t num_auth_info;
-    BAddr remote_udpgw_addr;
     BReactor *reactor;
-    void *user;
-    SocksUdpGwClient_handler_received handler_received;
-    UdpGwClient udpgw_client;
-    BTimer reconnect_timer;
-    int have_socks;
-    BSocksClient socks_client;
-    int socks_up;
+    PacketPassInactivityMonitor kasender;
+    PacketPassPriorityQueue queue;
+    PacketPassPriorityQueueFlow user_qflow;
+    PacketPassPriorityQueueFlow ka_qflow;
+    SinglePacketBuffer ka_buffer;
+    PacketRecvBlocker ka_blocker;
     DebugObject d_obj;
-} SocksUdpGwClient;
+} KeepaliveIO;
 
-int SocksUdpGwClient_Init (SocksUdpGwClient *o, int udp_mtu, int max_connections, int send_buffer_size, btime_t keepalive_time,
-                           BAddr socks_server_addr, const struct BSocksClient_auth_info *auth_info, size_t num_auth_info,
-                           BAddr remote_udpgw_addr, btime_t reconnect_time, BReactor *reactor, void *user,
-                           SocksUdpGwClient_handler_received handler_received) WARN_UNUSED;
-void SocksUdpGwClient_Free (SocksUdpGwClient *o);
-void SocksUdpGwClient_SubmitPacket (SocksUdpGwClient *o, BAddr local_addr, BAddr remote_addr, int is_dns, const uint8_t *data, int data_len);
+/**
+ * Initializes the object.
+ *
+ * @param o the object
+ * @param reactor reactor we live in
+ * @param output output interface
+ * @param keepalive_input keepalive input interface. Its MTU must be <= MTU of output.
+ * @param keepalive_interval_ms keepalive interval in milliseconds. Must be >0.
+ * @return 1 on success, 0 on failure
+ */
+int KeepaliveIO_Init (KeepaliveIO *o, BReactor *reactor, PacketPassInterface *output, PacketRecvInterface *keepalive_input, btime_t keepalive_interval_ms) WARN_UNUSED;
+
+/**
+ * Frees the object.
+ *
+ * @param o the object
+ */
+void KeepaliveIO_Free (KeepaliveIO *o);
+
+/**
+ * Returns the input interface.
+ *
+ * @param o the object
+ * @return input interface
+ */
+PacketPassInterface * KeepaliveIO_GetInput (KeepaliveIO *o);
 
 #endif
