@@ -55,6 +55,11 @@ if [ $? -ne 0 ]; then exit 1; fi
 cp "$badvpn_src_dir"/flow/*.{c,h} "$output_dir"/flow
 if [ $? -ne 0 ]; then exit 1; fi
 # -- lwip
-mkdir -p "$output_dir"/lwip
+mkdir -p "$output_dir"/lwip/src
+if [ $? -ne 0 ]; then exit 1; fi
+cp -r "$badvpn_src_dir"/lwip/src/core "$output_dir"/lwip/src
+if [ $? -ne 0 ]; then exit 1; fi
+cp -r "$badvpn_src_dir"/lwip/src/include "$output_dir"/lwip/src
+if [ $? -ne 0 ]; then exit 1; fi
 
 exit 0
