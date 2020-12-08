@@ -49,5 +49,12 @@ cp "$badvpn_src_dir"/base/*.{c,h} "$output_dir"/base
 if [ $? -ne 0 ]; then exit 1; fi
 patch "$output_dir"/base/BLog.c "$patch_dir"/badvpn_base_BLog_c.patch
 if [ $? -ne 0 ]; then exit 1; fi
+# -- flow
+mkdir -p "$output_dir"/flow
+if [ $? -ne 0 ]; then exit 1; fi
+cp "$badvpn_src_dir"/flow/*.{c,h} "$output_dir"/flow
+if [ $? -ne 0 ]; then exit 1; fi
+# -- lwip
+mkdir -p "$output_dir"/lwip
 
 exit 0
