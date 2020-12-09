@@ -1,5 +1,7 @@
 LOCAL_PATH := $(call my-dir)
 
+BUILD_SHARED_EXECUTABLE := $(LOCAL_PATH)/build-shared-executable.mk
+
 ###############################################################################
 ## libancillary
 ###############################################################################
@@ -130,4 +132,4 @@ LOCAL_SRC_FILES := \
     badvpn/tuntap/BTap.c \
     badvpn/udpgw_client/UdpGwClient.c \
 
-include $(BUILD_EXECUTABLE)
+include $(BUILD_SHARED_EXECUTABLE)
