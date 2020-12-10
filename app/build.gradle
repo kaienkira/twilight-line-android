@@ -15,6 +15,10 @@ android {
         versionCode 1
         versionName "0.1.0"
 
+        manifestPlaceholders = [
+            appName: "Twilight Line"
+        ]
+
         externalNativeBuild {
             ndkBuild {
                 abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
@@ -41,6 +45,11 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     externalNativeBuild {
         ndkBuild {
             path 'src/main/jni/Android.mk'
@@ -49,10 +58,12 @@ android {
 
     dependencies {
         implementation "androidx.appcompat:appcompat:1.2.0"
-        implementation "androidx.preference:preference:1.1.1"
     }
 
     lintOptions {
-        disable "IconMissingDensityFolder", "GoogleAppIndexingWarning"
+        disable "GoogleAppIndexingWarning",
+                "IconMissingDensityFolder",
+                "ObsoleteLintCustomCheck",
+                "SetTextI18n"
     }
 }
