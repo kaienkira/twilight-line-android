@@ -1,8 +1,5 @@
 package com.brickredstudio.twilightline;
 
-import android.content.Intent;
-import android.net.VpnService;
-
 public final class ProxyManager
 {
     public enum Status
@@ -16,7 +13,7 @@ public final class ProxyManager
     @FunctionalInterface
     public interface StartFinishCallback
     {
-        void run(boolean success);
+        void run(boolean result);
     }
 
     private static ProxyManager _instance = null;
@@ -62,8 +59,5 @@ public final class ProxyManager
 
     private void startVpnService()
     {
-        Intent intent = VpnService.prepare(App.getContext());
-        if (intent == null) {
-        }
     }
 }

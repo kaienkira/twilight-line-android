@@ -19,18 +19,29 @@ public final class MainActivityPresenter
     {
         Log.i(TAG, "start proxy");
         this.activity.setStartProxySwitchEnabled(false);
-        ProxyManager.getInstance().start(
-            (success) -> {
-                if (success == false) {
-                    activity.setStartProxySwitchChecked(false);
-                }
-                activity.setStartProxySwitchEnabled(true);
-            });
+        this.activity.prepareVpnService();
     }
 
     public void stopProxy()
     {
         Log.i(TAG, "stop proxy");
         ProxyManager.getInstance().stop();
+    }
+
+    public void onPrepareVpnServiceResult(boolean prepareResult)
+    {
+        if (prepareResult == false) {
+            activity.setStartProxySwitchChecked(false);
+            activity.setStartProxySwitchEnabled(true);
+            return;
+        }
+
+        ProxyManager.getInstance().start(
+            (result) -> {
+                if (result == false) {
+                    activity.setStartProxySwitchChecked(false);
+                }
+                activity.setStartProxySwitchEnabled(true);
+            });
     }
 }
