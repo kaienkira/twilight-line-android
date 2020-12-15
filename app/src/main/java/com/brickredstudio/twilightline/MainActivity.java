@@ -1,7 +1,10 @@
 package com.brickredstudio.twilightline;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.net.VpnService;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
@@ -10,6 +13,10 @@ import androidx.appcompat.widget.SwitchCompat;
 
 public final class MainActivity extends AppCompatActivity
 {
+    public static final int NOTIFICATION_ID = 1;
+    public static final String NOTIFICATION_CHANNEL_ID = "twilight-line";
+    public static final String NOTIFICATION_CHANNEL_NAME = "twilight-line";
+
     private MainActivityPresenter presenter = null;
     private SwitchCompat startProxySwitch = null;
 
@@ -36,6 +43,8 @@ public final class MainActivity extends AppCompatActivity
         layout.addView(this.startProxySwitch);
 
         setContentView(layout);
+
+        createNotificationChannel();
     }
 
     @Override
@@ -66,8 +75,21 @@ public final class MainActivity extends AppCompatActivity
         }
     }
 
-    public void onPrepareVpnServiceResult(boolean result)
+    private void onPrepareVpnServiceResult(boolean result)
     {
         this.presenter.onPrepareVpnServiceResult(result);
+    }
+
+    private void createNotificationChannel()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                NOTIFICATION_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_LOW);
+            NotificationManager manager =
+                getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
     }
 }

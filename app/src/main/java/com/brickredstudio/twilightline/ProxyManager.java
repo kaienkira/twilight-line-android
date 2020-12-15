@@ -1,5 +1,8 @@
 package com.brickredstudio.twilightline;
 
+import android.content.Intent;
+import androidx.core.content.ContextCompat;
+
 public final class ProxyManager
 {
     public enum Status
@@ -59,5 +62,9 @@ public final class ProxyManager
 
     private void startVpnService()
     {
+        Intent intent = new Intent(
+            App.getContext(), TwilightLineVpnService.class);
+        ContextCompat.startForegroundService(
+            App.getContext(), intent);
     }
 }
