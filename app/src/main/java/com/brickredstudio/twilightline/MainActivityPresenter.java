@@ -21,7 +21,12 @@ public final class MainActivityPresenter
     public void stopProxy()
     {
         Log.i(App.TAG, "stop proxy");
-        ProxyManager.getInstance().stop();
+        this.activity.setStartProxySwitchEnabled(false);
+
+        ProxyManager.getInstance().stop(
+            () -> {
+                activity.setStartProxySwitchEnabled(true);
+            });
     }
 
     public void onPrepareVpnServiceResult(boolean prepareResult)
@@ -33,10 +38,7 @@ public final class MainActivityPresenter
         }
 
         ProxyManager.getInstance().start(
-            (result) -> {
-                if (result == false) {
-                    activity.setStartProxySwitchChecked(false);
-                }
+            () -> {
                 activity.setStartProxySwitchEnabled(true);
             });
     }
