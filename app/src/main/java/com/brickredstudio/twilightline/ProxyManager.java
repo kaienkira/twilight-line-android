@@ -7,7 +7,6 @@ public final class ProxyManager
 {
     public enum Status
     {
-        NONE,
         IDLE,
         STARTING,
         RUNNING,
@@ -21,7 +20,7 @@ public final class ProxyManager
     }
 
     private static ProxyManager _instance = null;
-    private Status status = Status.NONE;
+    private Status status = Status.IDLE;
     private StartFinishCallback startFinishCb = null;
 
     public static void createInstance()
@@ -51,7 +50,9 @@ public final class ProxyManager
     public void start(StartFinishCallback startFinishCb)
     {
         if (this.status != Status.IDLE) {
-            startFinishCb.run(false);
+            if (startFinishCb != null) {
+                startFinishCb.run(false);
+            }
             return;
         }
 

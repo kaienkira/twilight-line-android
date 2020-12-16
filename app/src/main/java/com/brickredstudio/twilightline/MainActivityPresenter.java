@@ -4,7 +4,6 @@ import android.util.Log;
 
 public final class MainActivityPresenter
 {
-
     private MainActivity activity = null;
 
     public MainActivityPresenter(MainActivity activity)
