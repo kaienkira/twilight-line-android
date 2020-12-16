@@ -26,7 +26,7 @@
     <service
       android:name=".TwilightLineVpnService"
       android:permission="android.permission.BIND_VPN_SERVICE"
-      android:process=":vpn"
+      android:process=":proxy"
       android:exported="false">
       <intent-filter>
         <action android:name="android.net.VpnService"/>

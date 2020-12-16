@@ -31,15 +31,9 @@ public class App extends Application
         super.onCreate();
         _instance = this;
 
-        if (AppUtil.getProcessName().contains(":vpn")) {
-            vpnProcessInit();
-        } else {
+        if (AppUtil.getProcessName().contains(":proxy") == false) {
             mainProcessInit();
         }
-    }
-
-    private void vpnProcessInit()
-    {
     }
 
     private void mainProcessInit()
