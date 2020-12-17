@@ -8,6 +8,7 @@ import android.os.Build;
 
 public class App extends Application
 {
+    public static final String NAME = "Twilight Line Proxy";
     public static final String TAG = "TwilightLine";
     public static final int NOTIFICATION_MAIN = 1;
     public static final String NOTIFICATION_CHANNEL_MAIN_ID = "twilight-line";

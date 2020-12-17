@@ -37,10 +37,10 @@ public final class ProxyManager
 
     private Status status = Status.IDLE;
     private Messenger selfMessenger = null;
-    private ServiceConnection proxyServiceConn = null;
+    private ServiceConnection proxyServiceConnection = null;
     private Messenger proxyServiceMessenger = null;
-    private StartFinishCallback startFinishCb = null;
-    private StopFinishCallback stopFinishCb = null;
+    private StartFinishCallback startFinishCallback = null;
+    private StopFinishCallback stopFinishCallback = null;
 
     public static void createInstance()
     {
@@ -71,7 +71,7 @@ public final class ProxyManager
             }
         });
 
-        this.proxyServiceConn = new ServiceConnection() {
+        this.proxyServiceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service)
             {
@@ -91,30 +91,30 @@ public final class ProxyManager
         return this.status;
     }
 
-    public void start(StartFinishCallback startFinishCb)
+    public void start(StartFinishCallback startFinishCallback)
     {
         if (this.status != Status.IDLE) {
             return;
         }
 
         this.status = Status.STARTING;
-        this.startFinishCb = startFinishCb;
+        this.startFinishCallback = startFinishCallback;
 
         Intent intent = new Intent(
             App.getContext(), TwilightLineVpnService.class);
         ContextCompat.startForegroundService(
             App.getContext(), intent);
-        App.getContext().bindService(intent, this.proxyServiceConn, 0);
+        App.getContext().bindService(intent, this.proxyServiceConnection, 0);
     }
 
-    public void stop(StopFinishCallback stopFinishCb)
+    public void stop(StopFinishCallback stopFinishCallback)
     {
         if (this.status != Status.RUNNING) {
             return;
         }
 
         this.status = Status.STOPPING;
-        this.stopFinishCb = stopFinishCb;
+        this.stopFinishCallback = stopFinishCallback;
 
         Message request = Message.obtain();
         request.what = TwilightLineVpnService.MESSAGE_STOP_PROXY_REQUEST;
@@ -159,30 +159,30 @@ public final class ProxyManager
 
     private void onMessageStartProxyResponse(Message response)
     {
-        StartFinishCallback startFinishCb = this.startFinishCb;
+        StartFinishCallback startFinishCallback = this.startFinishCallback;
 
         this.status = Status.RUNNING;
-        this.startFinishCb = null;
+        this.startFinishCallback = null;
 
-        if (startFinishCb != null) {
-            startFinishCb.run();
+        if (startFinishCallback != null) {
+            startFinishCallback.run();
         }
     }
 
     private void onMessageStopProxyResponse(Message response)
     {
-        App.getContext().unbindService(this.proxyServiceConn);
+        App.getContext().unbindService(this.proxyServiceConnection);
         Intent intent = new Intent(
             App.getContext(), TwilightLineVpnService.class);
         App.getContext().stopService(intent);
 
-        StopFinishCallback stopFinishCb = this.stopFinishCb;
+        StopFinishCallback stopFinishCallback = this.stopFinishCallback;
 
         this.status = Status.IDLE;
-        this.stopFinishCb = null;
+        this.stopFinishCallback = null;
 
-        if (stopFinishCb != null) {
-            stopFinishCb.run();
+        if (stopFinishCallback != null) {
+            stopFinishCallback.run();
         }
     }
 }
