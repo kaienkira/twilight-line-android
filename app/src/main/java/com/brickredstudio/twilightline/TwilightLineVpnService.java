@@ -83,6 +83,10 @@ public class TwilightLineVpnService extends VpnService
             Log.e(App.TAG, "start vpn service failed");
             return;
         }
+        if (startTwilightLineClient() == false) {
+            Log.e(App.TAG, "start tlclient failed");
+            return;
+        }
 
         Message response = Message.obtain();
         response.what = TwilightLineVpnService.MESSAGE_START_PROXY_RESPONSE;
@@ -96,6 +100,7 @@ public class TwilightLineVpnService extends VpnService
 
     private void onMessageStopProxyRequest(Message request)
     {
+        stopTwilightLineClient();
         stopVpnService();
 
         Message response = Message.obtain();
@@ -166,5 +171,20 @@ public class TwilightLineVpnService extends VpnService
             }
             this.vpnFileDescriptor = null;
         }
+    }
+
+    private boolean startTwilightLineClient()
+    {
+        String progPath =
+            App.getContext().getApplicationInfo().nativeLibraryDir +
+            "/libtlclient.so";
+
+        Log.i(App.TAG, String.format("start %s", progPath));
+
+        return true;
+    }
+
+    private void stopTwilightLineClient()
+    {
     }
 }
