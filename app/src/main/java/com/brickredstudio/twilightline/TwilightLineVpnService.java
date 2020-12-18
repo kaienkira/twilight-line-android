@@ -28,6 +28,7 @@ public class TwilightLineVpnService extends VpnService
     private Messenger selfMessenger = null;
     private Messenger clientMessenger = null;
     private ParcelFileDescriptor vpnFileDescriptor = null;
+    private Process twilightLineClientProcess = null;
 
     public TwilightLineVpnService()
     {
@@ -178,13 +179,36 @@ public class TwilightLineVpnService extends VpnService
         String progPath =
             App.getContext().getApplicationInfo().nativeLibraryDir +
             "/libtlclient.so";
+        String configPath = App.getContext().getCacheDir() +
+            "/tl-client-config.json";
+        if (AppUtil.copyAsset(
+                "config/tl-client-config.json", configPath) == false) {
+            return false;
+        }
 
-        Log.i(App.TAG, String.format("start %s", progPath));
+        String cmd = progPath + " -e " + configPath;
+        Log.i(App.TAG, String.format("start %s", cmd));
+
+        try {
+            this.twilightLineClientProcess =
+                Runtime.getRuntime().exec(cmd);
+        } catch (Exception e) {
+            Log.e(App.TAG, String.format(
+                "start failed: %s", e.toString()));
+            return false;
+        }
 
         return true;
     }
 
     private void stopTwilightLineClient()
     {
+        if (this.twilightLineClientProcess != null) {
+            try {
+                this.twilightLineClientProcess.destroy();
+            } catch (Exception e) {
+            }
+            this.twilightLineClientProcess = null;
+        }
     }
 }
