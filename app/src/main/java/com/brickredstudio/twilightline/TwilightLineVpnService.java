@@ -29,6 +29,7 @@ public class TwilightLineVpnService extends VpnService
     private Messenger clientMessenger = null;
     private ParcelFileDescriptor vpnFileDescriptor = null;
     private Process twilightLineClientProcess = null;
+    private Process tun2SocksProcess = null;
 
     public TwilightLineVpnService()
     {
@@ -88,6 +89,10 @@ public class TwilightLineVpnService extends VpnService
             Log.e(App.TAG, "start tlclient failed");
             return;
         }
+        if (startTun2Socks() == false) {
+            Log.e(App.TAG, "start tun2socks failed");
+            return;
+        }
 
         Message response = Message.obtain();
         response.what = TwilightLineVpnService.MESSAGE_START_PROXY_RESPONSE;
@@ -101,6 +106,7 @@ public class TwilightLineVpnService extends VpnService
 
     private void onMessageStopProxyRequest(Message request)
     {
+        stopTun2Socks();
         stopTwilightLineClient();
         stopVpnService();
 
@@ -122,7 +128,7 @@ public class TwilightLineVpnService extends VpnService
         b.setMtu(VPN_MTU);
         b.setSession(App.NAME);
         // ipv4
-        b.addAddress(VPN_TUN_DEVICE_IPV4, 30);
+        b.addAddress(VPN_TUN_DEVICE_IPV4, 24);
         b.addDnsServer(VPN_TUN_ROUTER_IPV4);
         b.addRoute("0.0.0.0", 0);
         // ipv6
@@ -185,7 +191,6 @@ public class TwilightLineVpnService extends VpnService
                 "config/tl-client-config.json", configPath) == false) {
             return false;
         }
-
         String cmd = progPath + " -e " + configPath;
         Log.i(App.TAG, String.format("start %s", cmd));
 
@@ -209,6 +214,42 @@ public class TwilightLineVpnService extends VpnService
             } catch (Exception e) {
             }
             this.twilightLineClientProcess = null;
+        }
+    }
+
+    private boolean startTun2Socks()
+    {
+        String progPath =
+            App.getContext().getApplicationInfo().nativeLibraryDir +
+            "/libtun2socks.so";
+        String cmd = progPath +
+            " --netif-ipaddr " + VPN_TUN_ROUTER_IPV4 +
+            " --netif-netmask 255.255.255.0" +
+            " --netif-ip6addr " + VPN_TUN_ROUTER_IPV6 +
+            " --socks-server-addr 127.0.0.1:9058" +
+            " --loglevel warning";
+        Log.i(App.TAG, String.format("start %s", cmd));
+
+        try {
+            this.tun2SocksProcess =
+                Runtime.getRuntime().exec(cmd);
+        } catch (Exception e) {
+            Log.e(App.TAG, String.format(
+                "start failed: %s", e.toString()));
+            return false;
+        }
+
+        return true;
+    }
+
+    private void stopTun2Socks()
+    {
+        if (this.tun2SocksProcess != null) {
+            try {
+                this.tun2SocksProcess.destroy();
+            } catch (Exception e) {
+            }
+            this.tun2SocksProcess = null;
         }
     }
 }
