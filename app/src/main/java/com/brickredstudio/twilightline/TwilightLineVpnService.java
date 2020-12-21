@@ -130,10 +130,14 @@ public class TwilightLineVpnService extends VpnService
         VpnService.Builder b = new VpnService.Builder();
         b.setMtu(VPN_MTU);
         b.setSession(App.NAME);
+        // ipv4
         b.addAddress(VPN_TUN_DEVICE_IPV4, 30);
         b.addDnsServer(VPN_TUN_ROUTER_IPV4);
+        b.addRoute("0.0.0.0", 0);
+        // ipv6
         b.addAddress(VPN_TUN_DEVICE_IPV6, 126);
         b.addDnsServer(VPN_TUN_ROUTER_IPV6);
+        b.addRoute("::", 0);
 
         String selfApp = App.getContext().getPackageName();
         if (isGlobalProxy) {
@@ -156,10 +160,6 @@ public class TwilightLineVpnService extends VpnService
                 }
             }
         }
-
-        // add route
-        b.addRoute("0.0.0.0", 0);
-        b.addRoute("::", 0);
 
         try {
             this.vpnFileDescriptor = b.establish();
