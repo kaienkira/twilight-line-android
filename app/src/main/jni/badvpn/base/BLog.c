@@ -32,6 +32,10 @@
 
 #include "BLog.h"
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#endif
+
 #ifndef BADVPN_PLUGIN
 
 struct _BLog_channel blog_channel_list[] = {
@@ -47,12 +51,22 @@ static char *level_names[] = { NULL, "ERROR", "WARNING", "NOTICE", "INFO", "DEBU
 
 static void stdout_log (int channel, int level, const char *msg)
 {
+#ifndef __ANDROID__
     fprintf(stdout, "%s(%s): %s\n", level_names[level], blog_global.channels[channel].name, msg);
+#else
+    __android_log_print(ANDROID_LOG_DEBUG, "tun2socks", 
+            "%s(%s): %s\n", level_names[level], blog_global.channels[channel].name, msg);
+#endif
 }
 
 static void stderr_log (int channel, int level, const char *msg)
 {
+#ifndef __ANDROID__
     fprintf(stderr, "%s(%s): %s\n", level_names[level], blog_global.channels[channel].name, msg);
+#else
+    __android_log_print(ANDROID_LOG_ERROR, "tun2socks", 
+            "%s(%s): %s\n", level_names[level], blog_global.channels[channel].name, msg);
+#endif
 }
 
 static void stdout_stderr_free (void)

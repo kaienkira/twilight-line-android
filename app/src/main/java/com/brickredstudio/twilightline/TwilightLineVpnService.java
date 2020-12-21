@@ -2,6 +2,8 @@ package com.brickredstudio.twilightline;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.net.LocalSocket;
+import android.net.LocalSocketAddress;
 import android.net.VpnService;
 import android.os.Handler;
 import android.os.IBinder;
@@ -11,6 +13,7 @@ import android.os.Messenger;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import androidx.core.app.NotificationCompat;
+import java.io.FileDescriptor;
 
 public class TwilightLineVpnService extends VpnService
 {
@@ -127,14 +130,10 @@ public class TwilightLineVpnService extends VpnService
         VpnService.Builder b = new VpnService.Builder();
         b.setMtu(VPN_MTU);
         b.setSession(App.NAME);
-        // ipv4
-        b.addAddress(VPN_TUN_DEVICE_IPV4, 24);
+        b.addAddress(VPN_TUN_DEVICE_IPV4, 30);
         b.addDnsServer(VPN_TUN_ROUTER_IPV4);
-        b.addRoute("0.0.0.0", 0);
-        // ipv6
         b.addAddress(VPN_TUN_DEVICE_IPV6, 126);
         b.addDnsServer(VPN_TUN_ROUTER_IPV6);
-        b.addRoute("::", 0);
 
         String selfApp = App.getContext().getPackageName();
         if (isGlobalProxy) {
@@ -157,6 +156,10 @@ public class TwilightLineVpnService extends VpnService
                 }
             }
         }
+
+        // add route
+        b.addRoute("0.0.0.0", 0);
+        b.addRoute("::", 0);
 
         try {
             this.vpnFileDescriptor = b.establish();
@@ -222,12 +225,17 @@ public class TwilightLineVpnService extends VpnService
         String progPath =
             App.getContext().getApplicationInfo().nativeLibraryDir +
             "/libtun2socks.so";
+        String sockPath = App.getContext().getCacheDir() +
+            "/tunfd.sock";
+
         String cmd = progPath +
             " --netif-ipaddr " + VPN_TUN_ROUTER_IPV4 +
-            " --netif-netmask 255.255.255.0" +
             " --netif-ip6addr " + VPN_TUN_ROUTER_IPV6 +
+            " --sock-path " + sockPath +
             " --socks-server-addr 127.0.0.1:9058" +
-            " --loglevel warning";
+            " --dnsgw 127.0.0.1:9059" +
+            " --tunmtu " + Integer.toString(VPN_MTU) +
+            " --loglevel info";
         Log.i(App.TAG, String.format("start %s", cmd));
 
         try {
@@ -237,6 +245,38 @@ public class TwilightLineVpnService extends VpnService
             Log.e(App.TAG, String.format(
                 "start failed: %s", e.toString()));
             return false;
+        }
+
+        // send vpn fd
+        LocalSocket localSocket = null;
+        FileDescriptor[] fds = new FileDescriptor[1];
+        fds[0] = this.vpnFileDescriptor.getFileDescriptor();
+        int tryCount = 0;
+        for (;;) {
+            try {
+                Thread.sleep(1000);
+                localSocket = new LocalSocket();
+                localSocket.connect(new LocalSocketAddress(
+                    sockPath, LocalSocketAddress.Namespace.FILESYSTEM));
+                localSocket.setFileDescriptorsForSend(fds);
+                localSocket.getOutputStream().write(1);
+                break;
+
+            } catch (Exception e) {
+                if (++tryCount >= 10) {
+                    Log.e(App.TAG, String.format(
+                        "send vpn fd failed: %s", e.toString()));
+                    return false;
+                }
+            } finally {
+                if (localSocket != null) {
+                    try {
+                        localSocket.close();
+                    } catch (Exception e) {
+                    }
+                    localSocket = null;
+                }
+            }
         }
 
         return true;

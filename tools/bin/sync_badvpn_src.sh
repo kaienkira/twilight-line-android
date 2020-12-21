@@ -84,14 +84,6 @@ if [ $? -ne 0 ]; then exit 1; fi
 mkdir -p "$output_dir"/socksclient
 cp "$badvpn_src_dir"/socksclient/*.{c,h} "$output_dir"/socksclient
 if [ $? -ne 0 ]; then exit 1; fi
-# -- socks_udp_client
-mkdir -p "$output_dir"/socks_udp_client
-cp "$badvpn_src_dir"/socks_udp_client/*.{c,h} "$output_dir"/socks_udp_client
-if [ $? -ne 0 ]; then exit 1; fi
-# -- socksclient
-mkdir -p "$output_dir"/socksclient
-cp "$badvpn_src_dir"/socksclient/*.{c,h} "$output_dir"/socksclient
-if [ $? -ne 0 ]; then exit 1; fi
 # -- structure
 mkdir -p "$output_dir"/structure
 cp "$badvpn_src_dir"/structure/*.h "$output_dir"/structure
