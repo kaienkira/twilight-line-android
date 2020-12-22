@@ -134,10 +134,6 @@ public class TwilightLineVpnService extends VpnService
         b.addAddress(VPN_TUN_DEVICE_IPV4, 24);
         b.addDnsServer(VPN_TUN_ROUTER_IPV4);
         b.addRoute("0.0.0.0", 0);
-        // ipv6
-        b.addAddress(VPN_TUN_DEVICE_IPV6, 126);
-        b.addDnsServer(VPN_TUN_ROUTER_IPV6);
-        b.addRoute("::", 0);
 
         String selfApp = App.getContext().getPackageName();
         if (isGlobalProxy) {
@@ -232,7 +228,6 @@ public class TwilightLineVpnService extends VpnService
             " --loglevel info" +
             " --netif-ipaddr " + VPN_TUN_ROUTER_IPV4 +
             " --netif-netmask 255.255.255.0" +
-            " --netif-ip6addr " + VPN_TUN_ROUTER_IPV6 +
             " --sock-path " + sockPath +
             " --tun-mtu " + Integer.toString(VPN_MTU) +
             " --socks-server-addr 127.0.0.1:9058" +
