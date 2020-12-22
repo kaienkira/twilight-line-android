@@ -262,6 +262,17 @@ static int android_wait_for_vpn_fd()
 
 static int android_init_tun_device(int vpn_fd)
 {
+    struct BTap_init_data init_data;
+    init_data.dev_type = BTAP_DEV_TUN;
+    init_data.init_type = BTAP_INIT_FD;
+    init_data.init.fd.fd = vpn_fd;
+    init_data.init.fd.mtu = options_android.tun_mtu;
+
+    if (!BTap_Init2(&device, &ss, init_data, device_error_handler, NULL)) {
+        BLog(BLOG_ERROR, "BTap_Init2 failed");
+        return 0;
+    }
+
     return 1;
 }
 
@@ -334,6 +345,130 @@ int main(int argc, char *argv[])
         goto fail3;
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+
+    // NOTE: the order of the following is important:
+    // first device writing must evaluate,
+    // then lwip (so it can send packets to the device),
+    // then device reading (so it can pass received packets to lwip).
+
+    // init device reading
+    PacketPassInterface_Init(&device_read_interface, BTap_GetMTU(&device), device_read_handler_send, NULL, BReactor_PendingGroup(&ss));
+    if (!SinglePacketBuffer_Init(&device_read_buffer, BTap_GetOutput(&device), &device_read_interface, BReactor_PendingGroup(&ss))) {
+        BLog(BLOG_ERROR, "SinglePacketBuffer_Init failed");
+        goto fail4;
+    }
+
+    // Compute the largest possible UDP payload that we can receive from or send to the
+    // TUN device.
+    udp_mtu = BTap_GetMTU(&device) - (int)(sizeof(struct ipv4_header) + sizeof(struct udp_header));
+    if (options.netif_ip6addr) {
+        int udp_ip6_mtu = BTap_GetMTU(&device) - (int)(sizeof(struct ipv6_header) + sizeof(struct udp_header));
+        if (udp_mtu < udp_ip6_mtu) {
+            udp_mtu = udp_ip6_mtu;
+        }
+    }
+    if (udp_mtu < 0) {
+        udp_mtu = 0;
+    }
+
+    if (options.udpgw_remote_server_addr) {
+        udp_mode = UdpModeUdpgw;
+
+        // make sure our UDP payloads aren't too large for udpgw
+        int udpgw_mtu = udpgw_compute_mtu(udp_mtu);
+        if (udpgw_mtu < 0 || udpgw_mtu > PACKETPROTO_MAXPAYLOAD) {
+            BLog(BLOG_ERROR, "device MTU is too large for UDP");
+            goto fail4a;
+        }
+
+        // init udpgw client
+        if (!SocksUdpGwClient_Init(&udpgw_client, udp_mtu, DEFAULT_UDPGW_MAX_CONNECTIONS,
+            options.udpgw_connection_buffer_size, UDPGW_KEEPALIVE_TIME, socks_server_addr,
+            socks_auth_info, socks_num_auth_info, udpgw_remote_server_addr,
+            UDPGW_RECONNECT_TIME, &ss, NULL, udp_send_packet_to_device))
+        {
+            BLog(BLOG_ERROR, "SocksUdpGwClient_Init failed");
+            goto fail4a;
+        }
+    } else if (options.socks5_udp) {
+        udp_mode = UdpModeSocks;
+
+        // init SOCKS UDP client
+        SocksUdpClient_Init(&socks_udp_client, udp_mtu, DEFAULT_UDPGW_MAX_CONNECTIONS,
+            SOCKS_UDP_SEND_BUFFER_PACKETS, UDPGW_KEEPALIVE_TIME, socks_server_addr,
+            socks_auth_info, socks_num_auth_info, &ss, NULL, udp_send_packet_to_device);
+    } else {
+        udp_mode = UdpModeNone;
+    }
+
+    // init lwip init job
+    BPending_Init(&lwip_init_job, BReactor_PendingGroup(&ss), lwip_init_job_hadler, NULL);
+    BPending_Set(&lwip_init_job);
+
+    // init device write buffer
+    if (!(device_write_buf = (uint8_t *)BAlloc(BTap_GetMTU(&device)))) {
+        BLog(BLOG_ERROR, "BAlloc failed");
+        goto fail5;
+    }
+
+    // init TCP timer
+    // it won't trigger before lwip is initialized, becuase the lwip init is a job
+    BTimer_Init(&tcp_timer, TCP_TMR_INTERVAL, tcp_timer_handler, NULL);
+    BReactor_SetTimer(&ss, &tcp_timer);
+    tcp_timer_mod4 = 0;
+
+    // set no netif
+    have_netif = 0;
+
+    // set no listener
+    listener = NULL;
+    listener_ip6 = NULL;
+
+    // init clients list
+    LinkedList1_Init(&tcp_clients);
+
+    // init number of clients
+    num_clients = 0;
+
+    // enter event loop
+    BLog(BLOG_NOTICE, "entering event loop");
+    BReactor_Exec(&ss);
+
+    // free clients
+    LinkedList1Node *node;
+    while (node = LinkedList1_GetFirst(&tcp_clients)) {
+        struct tcp_client *client = UPPER_OBJECT(node, struct tcp_client, list_node);
+        client_murder(client);
+    }
+
+    // free listener
+    if (listener_ip6) {
+        tcp_close(listener_ip6);
+    }
+    if (listener) {
+        tcp_close(listener);
+    }
+
+    // free netif
+    if (have_netif) {
+        netif_remove(&the_netif);
+    }
+
+    BReactor_RemoveTimer(&ss, &tcp_timer);
+    BFree(device_write_buf);
+fail5:
+    BPending_Free(&lwip_init_job);
+    if (udp_mode == UdpModeUdpgw) {
+        SocksUdpGwClient_Free(&udpgw_client);
+    } else if (udp_mode == UdpModeSocks) {
+        SocksUdpClient_Free(&socks_udp_client);
+    }
+fail4a:
+    SinglePacketBuffer_Free(&device_read_buffer);
+fail4:
+    PacketPassInterface_Free(&device_read_interface);
+    BTap_Free(&device);
 fail3:
     BSignal_Finish();
 fail2:
