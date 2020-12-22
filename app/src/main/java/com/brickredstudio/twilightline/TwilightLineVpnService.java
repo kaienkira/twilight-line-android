@@ -233,7 +233,7 @@ public class TwilightLineVpnService extends VpnService
             " --netif-ip6addr " + VPN_TUN_ROUTER_IPV6 +
             " --sock-path " + sockPath +
             " --socks-server-addr 127.0.0.1:9058" +
-            " --dnsgw 127.0.0.1:9059" +
+            " --udpgw-remote-server-addr 127.0.0.1:9100" +
             " --tunmtu " + Integer.toString(VPN_MTU) +
             " --loglevel info";
         Log.i(App.TAG, String.format("start %s", cmd));
