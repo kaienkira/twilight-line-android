@@ -127,7 +127,7 @@ LOCAL_SRC_FILES := \
     badvpn/system/BThreadSignal.c \
     badvpn/system/BTime.c \
     badvpn/system/BUnixSignal.c \
-    badvpn/tun2socks/tun2socks.c \
+    badvpn/tun2socks/tun2socks_android.c \
     badvpn/tun2socks/SocksUdpGwClient.c \
     badvpn/tuntap/BTap.c \
     badvpn/udpgw_client/UdpGwClient.c \

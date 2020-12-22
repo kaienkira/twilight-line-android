@@ -131,7 +131,7 @@ public class TwilightLineVpnService extends VpnService
         b.setMtu(VPN_MTU);
         b.setSession(App.NAME);
         // ipv4
-        b.addAddress(VPN_TUN_DEVICE_IPV4, 30);
+        b.addAddress(VPN_TUN_DEVICE_IPV4, 24);
         b.addDnsServer(VPN_TUN_ROUTER_IPV4);
         b.addRoute("0.0.0.0", 0);
         // ipv6
@@ -229,13 +229,14 @@ public class TwilightLineVpnService extends VpnService
             "/tunfd.sock";
 
         String cmd = progPath +
+            " --loglevel info" +
             " --netif-ipaddr " + VPN_TUN_ROUTER_IPV4 +
+            " --netif-netmask 255.255.255.0" +
             " --netif-ip6addr " + VPN_TUN_ROUTER_IPV6 +
             " --sock-path " + sockPath +
+            " --tun-mtu " + Integer.toString(VPN_MTU) +
             " --socks-server-addr 127.0.0.1:9058" +
-            " --udpgw-remote-server-addr 127.0.0.1:9100" +
-            " --tunmtu " + Integer.toString(VPN_MTU) +
-            " --loglevel info";
+            " --udpgw-remote-server-addr 127.0.0.1:9100";
         Log.i(App.TAG, String.format("start %s", cmd));
 
         try {
