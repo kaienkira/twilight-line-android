@@ -1875,7 +1875,7 @@ tcp_split_unsent_seg(struct tcp_pcb *pcb, u16_t split)
   seg->flags |= TF_SEG_DATA_CHECKSUMMED;
 #endif /* TCP_CHECKSUM_ON_COPY */
 
-  /*  Remove this segment from the queue since trimming it may free pbufs */
+  /* Remove this segment from the queue since trimming it may free pbufs */
   pcb->snd_queuelen -= pbuf_clen(useg->p);
 
   /* Trim the original pbuf into our split size.  At this point our remainder segment must be setup
@@ -1884,7 +1884,7 @@ tcp_split_unsent_seg(struct tcp_pcb *pcb, u16_t split)
   useg->len -= remainder;
   TCPH_SET_FLAG(useg->tcphdr, split_flags);
 
-  /*  Add back to the queue with new trimmed pbuf */
+  /* Add back to the queue with new trimmed pbuf */
   pcb->snd_queuelen += pbuf_clen(useg->p);
 
 #if TCP_CHECKSUM_ON_COPY

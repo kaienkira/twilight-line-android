@@ -114,6 +114,7 @@ LOCAL_SRC_FILES := \
     badvpn/lwip/src/core/ipv6/mld6.c \
     badvpn/lwip/src/core/ipv6/nd6.c \
     badvpn/socksclient/BSocksClient.c \
+    badvpn/socks_udp_client/SocksUdpClient.c \
     badvpn/system/BConnection_common.c \
     badvpn/system/BConnection_unix.c \
     badvpn/system/BDatagram_unix.c \
