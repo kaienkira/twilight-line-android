@@ -241,9 +241,9 @@ public class TwilightLineVpnService extends VpnService
         try {
             this.tun2SocksProcess =
                 Runtime.getRuntime().exec(cmd);
-            AppUtil.logStream("tlclient",
+            AppUtil.logStream("tun2socks",
                 this.tun2SocksProcess.getInputStream());
-            AppUtil.logStream("tlclient",
+            AppUtil.logStream("tun2socks",
                 this.tun2SocksProcess.getErrorStream());
         } catch (Exception e) {
             Log.e(App.TAG, String.format(
