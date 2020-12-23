@@ -7,6 +7,7 @@ import android.util.Log;
 import java.lang.reflect.Method;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Scanner;
 
 public final class AppUtil
 {
@@ -74,5 +75,17 @@ public final class AppUtil
         }
 
         return true;
+    }
+
+    public static void logStream(String logTag, InputStream stream)
+    {
+        new Thread(new Runnable() {
+            public void run() {
+                Scanner sc = new Scanner(stream);
+                while (sc.hasNextLine()) {
+                    Log.i(logTag, sc.nextLine());
+                }
+            }
+        }).start();
     }
 }

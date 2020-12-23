@@ -196,6 +196,10 @@ public class TwilightLineVpnService extends VpnService
         try {
             this.twilightLineClientProcess =
                 Runtime.getRuntime().exec(cmd);
+            AppUtil.logStream("tlclient",
+                this.twilightLineClientProcess.getInputStream());
+            AppUtil.logStream("tlclient",
+                this.twilightLineClientProcess.getErrorStream());
         } catch (Exception e) {
             Log.e(App.TAG, String.format(
                 "start failed: %s", e.toString()));
@@ -225,7 +229,7 @@ public class TwilightLineVpnService extends VpnService
             "/tunfd.sock";
 
         String cmd = progPath +
-            " --loglevel info" +
+            " --loglevel notice" +
             " --netif-ipaddr " + VPN_TUN_ROUTER_IPV4 +
             " --netif-netmask 255.255.255.0" +
             " --sock-path " + sockPath +
