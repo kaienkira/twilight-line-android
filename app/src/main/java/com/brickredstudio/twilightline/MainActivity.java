@@ -27,11 +27,13 @@ public final class MainActivity extends AppCompatActivity
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setPadding(20, 20, 20, 20);
 
-        // start proxy switch
         this.startProxySwitch = new SwitchCompat(this);
         this.startProxySwitch.setText("Proxy Switch");
         this.startProxySwitch.setOnCheckedChangeListener(
             (buttonView, isChecked) -> {
+                if (buttonView.isPressed() == false) {
+                    return;
+                }
                 if (isChecked) {
                     presenter.startProxy();
                 } else {
@@ -40,16 +42,13 @@ public final class MainActivity extends AppCompatActivity
             });
         layout.addView(this.startProxySwitch);
 
-        // settings fragment
         FragmentContainerView settingsContainer =
             new FragmentContainerView(this);
         settingsContainer.setId(View.generateViewId());
         layout.addView(settingsContainer);
 
-        // set view
         setContentView(layout);
 
-        // add fragments
         this.settingsFragment = new SettingsFragment();
         getSupportFragmentManager().beginTransaction()
             .setReorderingAllowed(true)

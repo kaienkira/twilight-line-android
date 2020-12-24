@@ -37,7 +37,7 @@ public final class SettingsManager
             "per_app_proxy_enabled", false);
     }
 
-    public boolean getPerAppProxyEnabled()
+    public boolean isPerAppProxyEnabled()
     {
         return this.perAppProxyEnabled;
     }
