@@ -15,6 +15,7 @@ public final class MainActivityPresenter
     {
         Log.i(App.TAG, "start proxy");
         this.activity.setStartProxySwitchEnabled(false);
+        this.activity.setSettingsFragmentEnabled(false);
         this.activity.prepareVpnService();
     }
 
@@ -26,14 +27,16 @@ public final class MainActivityPresenter
         ProxyManager.getInstance().stop(
             () -> {
                 activity.setStartProxySwitchEnabled(true);
+                activity.setSettingsFragmentEnabled(true);
             });
     }
 
     public void onPrepareVpnServiceResult(boolean prepareResult)
     {
         if (prepareResult == false) {
-            activity.setStartProxySwitchChecked(false);
-            activity.setStartProxySwitchEnabled(true);
+            this.activity.setStartProxySwitchChecked(false);
+            this.activity.setStartProxySwitchEnabled(true);
+            this.activity.setSettingsFragmentEnabled(true);
             return;
         }
 
