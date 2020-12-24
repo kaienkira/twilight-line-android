@@ -6,7 +6,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 
-public class App extends Application
+public final class App extends Application
 {
     public static final String NAME = "Twilight Line Proxy";
     public static final String TAG = "TwilightLine";
@@ -39,6 +39,7 @@ public class App extends Application
 
     private void mainProcessInit()
     {
+        SettingsManager.createInstance();
         ProxyManager.createInstance();
         createNotificationChannel();
     }

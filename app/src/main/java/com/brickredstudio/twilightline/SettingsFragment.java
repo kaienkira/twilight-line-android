@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 public final class SettingsFragment extends Fragment
 {
     private SwitchCompat perAppProxySwitch = null;
+    private SwitchCompat editPerAppProxySwitch = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -22,7 +23,17 @@ public final class SettingsFragment extends Fragment
 
         this.perAppProxySwitch = new SwitchCompat(getActivity());
         this.perAppProxySwitch.setText("Using Per-App Proxy");
+        this.perAppProxySwitch.setOnCheckedChangeListener(
+            (buttonView, isChecked) -> {
+                onSetPerAppProxySwitchChecked(isChecked);
+            });
         layout.addView(this.perAppProxySwitch);
+
+        this.editPerAppProxySwitch = new SwitchCompat(getActivity());
+        this.editPerAppProxySwitch.setText("Edit Per-App Proxy");
+        this.editPerAppProxySwitch.setChecked(false);
+        this.editPerAppProxySwitch.setPadding(20, 0, 0, 0);
+        layout.addView(this.editPerAppProxySwitch);
 
         return layout;
     }
@@ -30,10 +41,18 @@ public final class SettingsFragment extends Fragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState)
     {
+        this.perAppProxySwitch.setChecked(
+            SettingsManager.getInstance().getPerAppProxyEnabled());
     }
 
     public void setEnabled(boolean enabled)
     {
         this.perAppProxySwitch.setEnabled(enabled);
+        this.editPerAppProxySwitch.setEnabled(enabled);
+    }
+
+    public void onSetPerAppProxySwitchChecked(boolean checked)
+    {
+        SettingsManager.getInstance().setPerAppProxyEnabled(checked);
     }
 }
