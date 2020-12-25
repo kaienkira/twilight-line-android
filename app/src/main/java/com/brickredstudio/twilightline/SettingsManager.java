@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.text.TextUtils;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -75,6 +76,11 @@ public final class SettingsManager
     public Set<String> getProxyApps()
     {
         return this.proxyApps;
+    }
+
+    public String getProxyAppsString()
+    {
+        return TextUtils.join("|", this.proxyApps);
     }
 
     public void addProxyApp(String appPackageName)

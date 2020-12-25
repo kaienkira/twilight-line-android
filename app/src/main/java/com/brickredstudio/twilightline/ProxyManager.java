@@ -3,6 +3,7 @@ package com.brickredstudio.twilightline;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -130,11 +131,16 @@ public final class ProxyManager
     {
         this.proxyServiceMessenger = new Messenger(service);
 
+        Bundle b = new Bundle();
+        b.putBoolean("is_global_proxy",
+            SettingsManager.getInstance().isPerAppProxyEnabled() == false);
+        b.putString("allowed_app_list",
+            SettingsManager.getInstance().getProxyAppsString());
+
         Message request = Message.obtain();
         request.what = TwilightLineVpnService.MESSAGE_START_PROXY_REQUEST;
         request.replyTo = this.selfMessenger;
-        request.arg1 =
-            SettingsManager.getInstance().isPerAppProxyEnabled() ? 1 : 0;
+        request.obj = b;
         try {
             this.proxyServiceMessenger.send(request);
         } catch (Exception e) {

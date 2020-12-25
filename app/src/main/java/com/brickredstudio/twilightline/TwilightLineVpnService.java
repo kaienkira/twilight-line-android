@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.net.LocalSocket;
 import android.net.LocalSocketAddress;
 import android.net.VpnService;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.ParcelFileDescriptor;
+import android.text.TextUtils;
 import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import java.io.FileDescriptor;
@@ -84,7 +86,13 @@ public class TwilightLineVpnService extends VpnService
     {
         this.clientMessenger = request.replyTo;
 
-        if (startVpnService(true, null) == false) {
+        Bundle b = (Bundle)request.obj;
+
+        boolean isGlobalProxy = b.getBoolean("is_global_proxy");
+        String[] allowedAppList =
+            TextUtils.split(b.getString("allowed_app_list"), "|");
+
+        if (startVpnService(isGlobalProxy, allowedAppList) == false) {
             Log.e(App.TAG, "start vpn service failed");
             return;
         }
