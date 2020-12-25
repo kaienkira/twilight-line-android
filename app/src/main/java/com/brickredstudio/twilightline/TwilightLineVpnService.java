@@ -145,14 +145,16 @@ public class TwilightLineVpnService extends VpnService
             }
         } else {
             for (String allowedApp : allowedAppList) {
-                if (allowedApp != selfApp) {
-                    try {
-                        b.addAllowedApplication(allowedApp);
-                    } catch (Exception e) {
-                        Log.e(App.TAG, String.format(
-                            "add allowed app(%s) failed", allowedApp));
-                        return false;
-                    }
+                if (allowedApp.equals(selfApp)) {
+                    continue;
+                }
+
+                try {
+                    b.addAllowedApplication(allowedApp);
+                } catch (Exception e) {
+                    Log.e(App.TAG, String.format(
+                        "add allowed app(%s) failed", allowedApp));
+                    return false;
                 }
             }
         }

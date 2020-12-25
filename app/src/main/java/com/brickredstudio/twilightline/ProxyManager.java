@@ -133,6 +133,8 @@ public final class ProxyManager
         Message request = Message.obtain();
         request.what = TwilightLineVpnService.MESSAGE_START_PROXY_REQUEST;
         request.replyTo = this.selfMessenger;
+        request.arg1 =
+            SettingsManager.getInstance().isPerAppProxyEnabled() ? 1 : 0;
         try {
             this.proxyServiceMessenger.send(request);
         } catch (Exception e) {
