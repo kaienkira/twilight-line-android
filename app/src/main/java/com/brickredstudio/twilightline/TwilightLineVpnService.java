@@ -90,7 +90,7 @@ public class TwilightLineVpnService extends VpnService
 
         boolean isGlobalProxy = b.getBoolean("is_global_proxy");
         String[] allowedAppList =
-            TextUtils.split(b.getString("allowed_app_list"), "|");
+            TextUtils.split(b.getString("allowed_app_list"), "\\|");
 
         if (startVpnService(isGlobalProxy, allowedAppList) == false) {
             Log.e(App.TAG, "start vpn service failed");
