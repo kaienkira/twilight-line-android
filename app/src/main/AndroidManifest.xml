@@ -13,7 +13,7 @@
     android:name=".App"
     android:label="${appName}"
     android:icon="@drawable/app_icon"
-    android:theme="@style/Theme.AppCompat.Light"
+    android:theme="@style/MyAppTheme"
     android:allowBackup="false">
 
     <activity

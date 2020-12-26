@@ -2,12 +2,14 @@ package com.brickredstudio.twilightline;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.util.Log;
 import java.lang.reflect.Method;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Scanner;
+import androidx.appcompat.content.res.AppCompatResources;
 
 public final class AppUtil
 {
@@ -87,5 +89,10 @@ public final class AppUtil
                 }
             }
         }).start();
+    }
+
+    public static ColorStateList getColorStateList(int id)
+    {
+        return AppCompatResources.getColorStateList(App.getContext(), id);
     }
 }

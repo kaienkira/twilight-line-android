@@ -85,7 +85,7 @@ public final class EditPerAppProxyFragment extends Fragment
         public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
         {
             LinearLayout layout = new LinearLayout(parent.getContext());
-            layout.setLayoutParams(new LayoutParams(
+            layout.setLayoutParams(new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
             MyViewHolder holder = new MyViewHolder(layout);
 
@@ -156,7 +156,6 @@ public final class EditPerAppProxyFragment extends Fragment
     }
 
     private RecyclerView appListView = null;
-    private AppListViewAdapter appListViewAdapter = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -166,6 +165,7 @@ public final class EditPerAppProxyFragment extends Fragment
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setPadding(20, 0, 0, 0);
 
+        // app list view
         this.appListView = new RecyclerView(getActivity());
         this.appListView.setHasFixedSize(true);
         this.appListView.setLayoutManager(
@@ -178,7 +178,6 @@ public final class EditPerAppProxyFragment extends Fragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState)
     {
-        this.appListViewAdapter = new AppListViewAdapter();
-        this.appListView.setAdapter(this.appListViewAdapter);
+        this.appListView.setAdapter(new AppListViewAdapter());
     }
 }

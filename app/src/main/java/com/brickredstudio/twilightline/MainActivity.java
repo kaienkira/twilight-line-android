@@ -27,6 +27,7 @@ public final class MainActivity extends AppCompatActivity
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setPadding(20, 20, 20, 20);
 
+        // start proxy switch
         this.startProxySwitch = new SwitchCompat(this);
         this.startProxySwitch.setText("Proxy Switch");
         this.startProxySwitch.setOnCheckedChangeListener(
@@ -42,6 +43,7 @@ public final class MainActivity extends AppCompatActivity
             });
         layout.addView(this.startProxySwitch);
 
+        // settings fragment
         FragmentContainerView settingsContainer =
             new FragmentContainerView(this);
         settingsContainer.setId(View.generateViewId());
