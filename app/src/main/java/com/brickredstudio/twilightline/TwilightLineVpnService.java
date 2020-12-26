@@ -27,8 +27,6 @@ public class TwilightLineVpnService extends VpnService
     private static final int VPN_MTU = 1500;
     private static final String VPN_TUN_DEVICE_IPV4 = "172.27.0.1";
     private static final String VPN_TUN_ROUTER_IPV4 = "172.27.0.2";
-    private static final String VPN_TUN_DEVICE_IPV6 = "2001:db87::1";
-    private static final String VPN_TUN_ROUTER_IPV6 = "2001:db87::2";
 
     private Messenger selfMessenger = null;
     private Messenger clientMessenger = null;
@@ -91,12 +89,13 @@ public class TwilightLineVpnService extends VpnService
         boolean isGlobalProxy = b.getBoolean("is_global_proxy");
         String[] allowedAppList =
             TextUtils.split(b.getString("allowed_app_list"), "\\|");
+        String proxyConfigName = b.getString("proxy_config_name");
 
         if (startVpnService(isGlobalProxy, allowedAppList) == false) {
             Log.e(App.TAG, "start vpn service failed");
             return;
         }
-        if (startTwilightLineClient() == false) {
+        if (startTwilightLineClient(proxyConfigName) == false) {
             Log.e(App.TAG, "start tlclient failed");
             return;
         }
@@ -189,7 +188,7 @@ public class TwilightLineVpnService extends VpnService
         }
     }
 
-    private boolean startTwilightLineClient()
+    private boolean startTwilightLineClient(String configName)
     {
         String progPath =
             App.getContext().getApplicationInfo().nativeLibraryDir +
@@ -197,10 +196,13 @@ public class TwilightLineVpnService extends VpnService
         String configPath = App.getContext().getCacheDir() +
             "/tl-client-config.json";
         if (AppUtil.copyAsset(
-                "config/tl-client-config.json", configPath) == false) {
+                "config/tl-client/tlclient-" + configName + ".json",
+                configPath) == false) {
             return false;
         }
-        String cmd = progPath + " -e " + configPath;
+        String cmd = progPath +
+            " -e " + configPath +
+            " -l 127.0.0.1:9058";
         Log.i(App.TAG, String.format("start %s", cmd));
 
         try {

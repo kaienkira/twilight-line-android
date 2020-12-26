@@ -136,6 +136,7 @@ public final class ProxyManager
             SettingsManager.getInstance().isPerAppProxyEnabled() == false);
         b.putString("allowed_app_list",
             SettingsManager.getInstance().getProxyAppsString());
+        b.putString("proxy_config_name", "usa");
 
         Message request = Message.obtain();
         request.what = TwilightLineVpnService.MESSAGE_START_PROXY_REQUEST;

@@ -43,8 +43,10 @@ fi
 
 # copy files
 # -- config
-cp "$tl_src_dir"/etc/client_config.json \
-   "$config_output_dir"/tl-client-config.json
+find "$config_output_dir"/tl-client/ -name '*.json' -delete
+if [ $? -ne 0 ]; then exit 1; fi
+cp "$tl_src_dir"/etc/tlclient-*.json \
+   "$config_output_dir"/tl-client/
 if [ $? -ne 0 ]; then exit 1; fi
 # -- binary
 cp "$tl_src_dir"/bin/twilight-line-go-client-android-i686 \
