@@ -116,8 +116,16 @@ public final class SettingsFragment extends Fragment
     private void initChooseProxyConfigData()
     {
         this.chooseProxyConfigData = new ArrayList<String>();
-        this.chooseProxyConfigData.add("usa");
-        this.chooseProxyConfigData.add("jp");
+
+        String[] configFiles = AppUtil.listAssets("config/tl-client");
+        if (configFiles == null) {
+            return;
+        }
+
+        for (String f : configFiles) {
+            this.chooseProxyConfigData.add(
+                f.replace("tlclient-", "").replace(".json", ""));
+        }
     }
 
     @Override
@@ -125,6 +133,15 @@ public final class SettingsFragment extends Fragment
     {
         this.perAppProxySwitch.setChecked(
             SettingsManager.getInstance().isPerAppProxyEnabled());
+
+        if (this.chooseProxyConfigData.size() > 0) {
+            int index = this.chooseProxyConfigData.indexOf(
+                SettingsManager.getInstance().getProxyConfigName());
+            if (index < 0) {
+                index = 0;
+            }
+            this.chooseProxyConfigSpinner.setSelection(index);
+        }
     }
 
     public void setEnabled(boolean enabled)
@@ -141,6 +158,8 @@ public final class SettingsFragment extends Fragment
 
     public void onChooseProxyConfig(int pos)
     {
+        SettingsManager.getInstance().setProxyConfigName(
+            this.chooseProxyConfigData.get(pos));
     }
 
     public void onPerAppProxySwitchChecked(boolean checked)

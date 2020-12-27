@@ -32,6 +32,24 @@ public final class AppUtil
             }
         }
     }
+
+    public static ColorStateList getColorStateList(int id)
+    {
+        return AppCompatResources.getColorStateList(App.getContext(), id);
+    }
+
+    public static String[] listAssets(String assetDirName)
+    {
+        try {
+            return App.getContext().getAssets().list(assetDirName);
+
+        } catch (Exception e) {
+            Log.e(App.TAG, String.format(
+                "list assets failed: %s", e.toString()));
+            return null;
+        }
+    }
+
     public static boolean copyAsset(
         String assetName, String destFileName)
     {
@@ -89,10 +107,5 @@ public final class AppUtil
                 }
             }
         }).start();
-    }
-
-    public static ColorStateList getColorStateList(int id)
-    {
-        return AppCompatResources.getColorStateList(App.getContext(), id);
     }
 }

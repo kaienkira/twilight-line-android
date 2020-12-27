@@ -14,6 +14,7 @@ public final class SettingsManager
     private static SettingsManager _instance = null;
 
     private SharedPreferences preferences = null;
+    private String proxyConfigName = null;
     private boolean perAppProxyEnabled = false;
     private Set<String> proxyApps = null;
 
@@ -40,6 +41,8 @@ public final class SettingsManager
     {
         this.preferences = App.getContext().getSharedPreferences(
             "main_config", Context.MODE_PRIVATE);
+        this.proxyConfigName = this.preferences.getString(
+            "proxy_config_name", "");
         this.perAppProxyEnabled = this.preferences.getBoolean(
             "per_app_proxy_enabled", false);
         this.proxyApps = new TreeSet<String>();
@@ -57,6 +60,20 @@ public final class SettingsManager
                 }
             }
         }
+    }
+
+    public String getProxyConfigName()
+    {
+        return this.proxyConfigName;
+    }
+
+    public void setProxyConfigName(String name)
+    {
+        this.proxyConfigName = name;
+
+        SharedPreferences.Editor e = this.preferences.edit();
+        e.putString("proxy_config_name", this.proxyConfigName);
+        e.apply();
     }
 
     public boolean isPerAppProxyEnabled()
