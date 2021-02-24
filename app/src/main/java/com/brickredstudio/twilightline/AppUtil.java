@@ -57,7 +57,7 @@ public final class AppUtil
     }
 
     public static boolean copyAsset(
-        String assetName, String destFileName, int buffSize)
+        String assetName, String destFileName, int bufferSize)
     {
         InputStream input = null;
         FileOutputStream output = null;
@@ -65,9 +65,9 @@ public final class AppUtil
             input = App.getContext().getAssets().open(assetName);
             output = new FileOutputStream(destFileName);
 
-            final byte data[] = new byte[buffSize];
+            final byte data[] = new byte[bufferSize];
             for (;;) {
-                int count = input.read(data, 0, buffSize);
+                int count = input.read(data, 0, bufferSize);
                 if (count < 0) {
                     break;
                 }
