@@ -6,6 +6,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.FragmentContainerView;
@@ -15,6 +19,7 @@ public final class MainActivity extends AppCompatActivity
     private MainActivityPresenter presenter = null;
     private SwitchCompat startProxySwitch = null;
     private SettingsFragment settingsFragment = null;
+    private ActivityResultLauncher<Intent> vpnPrepareLauncher = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -56,14 +61,16 @@ public final class MainActivity extends AppCompatActivity
             .setReorderingAllowed(true)
             .add(settingsContainer.getId(), this.settingsFragment)
             .commit();
-    }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        onPrepareVpnServiceResult(resultCode == AppCompatActivity.RESULT_OK);
+        this.vpnPrepareLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    onPrepareVpnServiceResult(
+                        result.getResultCode() == AppCompatActivity.RESULT_OK);
+                }
+            });
     }
 
     public void setStartProxySwitchChecked(boolean checked)
@@ -87,7 +94,7 @@ public final class MainActivity extends AppCompatActivity
         if (intent == null) {
             onPrepareVpnServiceResult(true);
         } else {
-            startActivityForResult(intent, 0);
+            this.vpnPrepareLauncher.launch(intent);
         }
     }
 

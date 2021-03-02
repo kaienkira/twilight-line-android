@@ -9,6 +9,9 @@ debug:
 release:
 	@gradle assembleRelease check 
 
+bundle:
+	@gradle bundleRelease
+
 clean:
 	@gradle clean
 
