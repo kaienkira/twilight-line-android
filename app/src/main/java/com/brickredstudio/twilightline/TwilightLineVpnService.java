@@ -51,7 +51,8 @@ public class TwilightLineVpnService extends VpnService
         PendingIntent pendingIntent = PendingIntent.getActivity(
             App.getContext(), 0,
             new Intent(App.getContext(), MainActivity.class),
-            PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent.FLAG_UPDATE_CURRENT |
+            PendingIntent.FLAG_IMMUTABLE);
 
         startForeground(App.NOTIFICATION_MAIN,
             new NotificationCompat.Builder(
