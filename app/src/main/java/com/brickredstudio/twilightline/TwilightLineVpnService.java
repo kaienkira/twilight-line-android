@@ -141,7 +141,7 @@ public class TwilightLineVpnService extends VpnService
         b.setSession(App.NAME);
         // ipv4
         b.addAddress(VPN_TUN_DEVICE_IPV4, 24);
-        b.addDnsServer(VPN_TUN_ROUTER_IPV4);
+        b.addDnsServer("8.8.8.8");
         b.addRoute("0.0.0.0", 0);
 
         String selfApp = App.getContext().getPackageName();
