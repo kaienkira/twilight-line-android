@@ -73,6 +73,13 @@ public final class MainActivity extends AppCompatActivity
             });
     }
 
+    @Override
+    public void onDestroy()
+    {
+        this.presenter.stopProxy();
+        super.onDestroy();
+    }
+
     public void setStartProxySwitchChecked(boolean checked)
     {
         this.startProxySwitch.setChecked(checked);

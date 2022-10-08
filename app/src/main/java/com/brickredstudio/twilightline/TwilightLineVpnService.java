@@ -78,6 +78,7 @@ public class TwilightLineVpnService extends VpnService
             onMessageStartProxyRequest(message);
         } else if (message.what == MESSAGE_STOP_PROXY_REQUEST) {
             onMessageStopProxyRequest(message);
+            stopSelf();
         }
     }
 
