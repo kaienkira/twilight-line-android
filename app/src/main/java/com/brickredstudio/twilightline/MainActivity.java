@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.VpnService;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;

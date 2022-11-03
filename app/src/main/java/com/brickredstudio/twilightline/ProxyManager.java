@@ -9,7 +9,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
-import android.util.Log;
 import androidx.core.content.ContextCompat;
 
 public final class ProxyManager
@@ -62,7 +61,7 @@ public final class ProxyManager
         return _instance;
     }
 
-    public ProxyManager()
+    private ProxyManager()
     {
         this.selfMessenger = new Messenger(new Handler(Looper.getMainLooper()) {
             @Override
