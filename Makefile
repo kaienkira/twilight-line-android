@@ -1,7 +1,6 @@
-.PHONY: build debug release clean
+.PHONY: default debug release bundle clean install transfer
 
-build:
-	@gradle build
+default: release
 
 debug:
 	@gradle assemble check 
