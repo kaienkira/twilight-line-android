@@ -39,6 +39,7 @@ public final class EditPerAppProxyFragment extends Fragment
 
         private List<PackageInfo> data = null;
 
+        @SuppressWarnings("deprecation")
         public AppListViewAdapter()
         {
             List<PackageInfo> installedApps =

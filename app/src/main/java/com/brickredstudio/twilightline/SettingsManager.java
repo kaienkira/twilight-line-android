@@ -37,6 +37,7 @@ public final class SettingsManager
         return _instance;
     }
 
+    @SuppressWarnings("deprecation")
     public SettingsManager()
     {
         this.preferences = App.getContext().getSharedPreferences(
