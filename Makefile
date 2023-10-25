@@ -18,4 +18,4 @@ install:
 	@adb install -r app/build/outputs/apk/release/app-release.apk
 
 transfer:
-	sz -bey app/build/outputs/apk/release/app-release.apk
+	tsz -y app/build/outputs/apk/release/app-release.apk
