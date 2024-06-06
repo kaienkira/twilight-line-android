@@ -14,7 +14,9 @@
     android:label="${appName}"
     android:icon="@drawable/app_icon"
     android:theme="@style/MyAppTheme"
-    android:allowBackup="false">
+    android:allowBackup="false"
+    android:fullBackupContent="false"
+    android:dataExtractionRules="@xml/data_extraction_rules">
 
     <activity
       android:name=".MainActivity"
