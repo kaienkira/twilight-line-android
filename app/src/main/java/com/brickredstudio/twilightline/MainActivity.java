@@ -5,12 +5,16 @@ import android.net.VpnService;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentContainerView;
 
 public final class MainActivity extends AppCompatActivity
@@ -23,6 +27,7 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
         this.presenter = new MainActivityPresenter(this);
@@ -30,6 +35,19 @@ public final class MainActivity extends AppCompatActivity
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setPadding(20, 20, 20, 20);
+
+        // edge to edge support
+        ViewCompat.setOnApplyWindowInsetsListener(layout,
+            (v, insets) -> {
+                Insets i = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars());
+                v.setPadding(
+                    i.left + 20,
+                    i.top + 20,
+                    i.right + 20,
+                    i.bottom + 20);
+                return insets;
+            });
 
         // start proxy switch
         this.startProxySwitch = new SwitchCompat(this);

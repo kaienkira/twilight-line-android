@@ -7,15 +7,15 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    compileSdkVersion 34
-    buildToolsVersion "34.0.0"
-    ndkVersion "27.0.12077973"
+    compileSdkVersion 35
+    buildToolsVersion "35.0.0"
+    ndkVersion "27.2.12479018"
     namespace "com.brickredstudio.twilightline"
 
     defaultConfig {
         applicationId "com.brickredstudio.twilightline"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 1
         versionName "0.1.0"
 
